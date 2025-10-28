@@ -1,0 +1,30 @@
+name: Spotify Stats Update
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # Actualiza cada 6 horas
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Generar estadísticas de Spotify
+        uses: SANTONLA/spotify-stats-action@main
+        with:
+          username: silanton
+        env:
+          SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
+          SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+
+      - name: Commit y push de resultados
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Action"
+          git add .
+          git commit -m "Actualización automática de Spotify Stats" || echo "No hay cambios"
+          git push
