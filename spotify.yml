@@ -1,76 +1,54 @@
-name: Spotify Stats Update
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Spotify Stats</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #121212; color: #fff; }
+    h1 { color: #1DB954; }
+    .track-list { margin-bottom: 40px; }
+    .track { margin: 5px 0; }
+    a { color: #1DB954; text-decoration: none; }
+  </style>
+</head>
+<body>
+  <h1>Top Tracks</h1>
+  <div id="top-tracks" class="track-list"></div>
 
-on:
-  schedule:
-    - cron: "0 */6 * * *" # cada 6 horas
-  workflow_dispatch:
+  <h1>Recently Played</h1>
+  <div id="recently-played" class="track-list"></div>
 
-jobs:
-  spotify:
-    runs-on: ubuntu-latest
-    steps:
-      # Clonar repositorio
-      - name: Clonar repositorio
-        uses: actions/checkout@v4
+  <script>
+    // Función para mostrar tracks
+    function mostrarTracks(elementId, tracks, isRecentlyPlayed = false) {
+      const container = document.getElementById(elementId);
+      tracks.forEach(item => {
+        const track = isRecentlyPlayed ? item.track : item;
+        const artistNames = track.artists.map(a => a.name).join(", ");
+        const div = document.createElement('div');
+        div.className = 'track';
+        div.innerHTML = `<a href="${track.external_urls.spotify}" target="_blank">${track.name}</a> - ${artistNames}`;
+        container.appendChild(div);
+      });
+    }
 
-      # Instalar jq para procesar JSON
-      - name: Instalar jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+    // Cargar top_tracks.json
+    fetch('top_tracks.json')
+      .then(response => response.json())
+      .then(data => {
+        mostrarTracks('top-tracks', data.items);
+      })
+      .catch(err => console.error('Error cargando top_tracks.json:', err));
 
-      # Obtener access token de Spotify
-      - name: Obtener access token de Spotify
-        id: spotify_token
-        run: |
-          RESPONSE=$(curl -s -X POST "https://accounts.spotify.com/api/token" \
-            -H "Content-Type: application/x-www-form-urlencoded" \
-            -d "grant_type=refresh_token" \
-            -d "refresh_token=${{ secrets.SPOTIFY_REFRESH_TOKEN }}" \
-            -d "client_id=${{ secrets.SPOTIFY_CLIENT_ID }}" \
-            -d "client_secret=${{ secrets.SPOTIFY_CLIENT_SECRET }}")
-          
-          ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
-          
-          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" == "null" ]; then
-            echo "ERROR: No se pudo obtener el access token"
-            echo "$RESPONSE"
-            exit 1
-          fi
-          
-          echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
-          echo "Access token generado correctamente."
-
-      # Obtener top tracks y recently played
-      - name: Obtener estadísticas de Spotify
-        run: |
-          echo "Obteniendo top tracks..."
-          curl -s -X GET "https://api.spotify.com/v1/me/top/tracks?limit=10" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            -H "Content-Type: application/json" \
-            > top_tracks.json
-          
-          echo "Obteniendo recently played..."
-          curl -s -X GET "https://api.spotify.com/v1/me/player/recently-played?limit=10" \
-            -H "Authorization: Bearer $ACCESS_TOKEN" \
-            -H "Content-Type: application/json" \
-            > recently_played.json
-
-      # Mostrar un resumen en la consola
-      - name: Mostrar top tracks y recently played
-        run: |
-          echo "Top Tracks:"
-          jq -r '.items[] | "\(.name) - \(.artists[0].name)"' top_tracks.json
-          
-          echo ""
-          echo "Recently Played:"
-          jq -r '.items[] | "\(.track.name) - \(.track.artists[0].name)"' recently_played.json
-
-      # Hacer commit y push de los archivos JSON generados
-      - name: Commit y push de resultados
-        run: |
-          git config --local user.email "actions@github.com"
-          git config --local user.name "GitHub Action"
-          git add top_tracks.json recently_played.json
-          git commit -m "Actualización automática de Spotify Stats" || echo "No hay cambios"
-          git push
+    // Cargar recently_played.json
+    fetch('recently_played.json')
+      .then(response => response.json())
+      .then(data => {
+        mostrarTracks('recently-played', data.items, true);
+      })
+      .catch(err => console.error('Error cargando recently_played.json:', err));
+  </script>
+</body>
+</html>
 
 
