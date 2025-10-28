@@ -69,20 +69,17 @@
   </div>
 
   <script>
-    // --- PEGA AQUÍ EL CONTENIDO DE recently_played.json ---
-    const recentlyPlayedData = {
-      "items": [
-        /* ... tu contenido de recently_played.json ... */
-      ]
-    };
-
-    // --- PEGA AQUÍ EL CONTENIDO DE top_tracks.json ---
-    const topTracksData = {
-      "items": [
-        /* ... tu contenido de top_tracks.json ... */
-      ]
-    };
-
+    {
+  "top_tracks": [
+    {"name": "Insurreccion (En Directo)", "artist": "El Último De La Fila"},
+    {"name": "L'amore conta", "artist": "Ligabue"},
+    {"name": "Barfuß am Klavier", "artist": "AnnenMayKantereit"}
+  ],
+  "recently_played": [
+    {"name": "Monument Valley", "artist": "Leviro"},
+    {"name": "In the Sky", "artist": "POURI X"}
+  ]
+}
     // Mostrar canciones
     function mostrarTracks(containerId, items, isTop=false) {
       const container = document.getElementById(containerId);
