@@ -55,28 +55,81 @@
 <body>
   <h1>🎧 Spotify Stats de <a href="https://open.spotify.com/user/silanton">silanton</a></h1>
 
-  <!-- Sección: Últimas canciones reproducidas -->
+  <!-- Últimas canciones reproducidas -->
   <div class="card">
     <h2>Últimas canciones reproducidas</h2>
-    <!-- Aquí la GitHub Action reemplazará con tus datos reales -->
-    <p style="color: #b3b3b3; font-size: 14px;">Tus canciones se mostrarán automáticamente aquí después de que la GitHub Action se ejecute.</p>
+    <div class="recently-played">Cargando...</div>
   </div>
 
-  <!-- Sección: Artistas más escuchados -->
+  <!-- Artistas más escuchados -->
   <div class="card">
     <h2>Artistas más escuchados</h2>
-    <p style="color: #b3b3b3; font-size: 14px;">Tus artistas favoritos aparecerán aquí automáticamente.</p>
+    <div class="top-artists">Cargando...</div>
   </div>
 
-  <!-- Sección: Canciones más reproducidas -->
+  <!-- Canciones más reproducidas -->
   <div class="card">
     <h2>Canciones más reproducidas</h2>
-    <p style="color: #b3b3b3; font-size: 14px;">Tus top tracks se mostrarán aquí automáticamente.</p>
+    <div class="top-tracks">Cargando...</div>
   </div>
-</body>
-</html>
 
+  <script>
+    // Crear un item de canción
+    function crearItem(track) {
+      const div = document.createElement('div');
+      div.className = 'item';
+      div.innerHTML = `
+        <img src="${track.album.images[1]?.url || ''}" alt="${track.name}">
+        <div class="info">
+          <p><a href="${track.external_urls.spotify}" target="_blank">${track.name}</a></p>
+          <p class="artist">${track.artists.map(a => a.name).join(', ')}</p>
+        </div>
+        <div class="popularity">${track.popularity}</div>
+      `;
+      return div;
+    }
 
+    // Mostrar tracks en un contenedor
+    function mostrarTracks(containerSelector, tracks) {
+      const container = document.querySelector(containerSelector);
+      container.innerHTML = ''; // Limpiar contenido inicial
+      tracks.forEach(track => container.appendChild(crearItem(track)));
+    }
+
+    // Mostrar artistas más escuchados
+    function mostrarArtistas(containerSelector, tracks) {
+      const container = document.querySelector(containerSelector);
+      container.innerHTML = '';
+      const artistas = {};
+      tracks.forEach(track => track.artists.forEach(a => {
+        artistas[a.name] = (artistas[a.name] || 0) + 1;
+      }));
+      const topArtistas = Object.entries(artistas).sort((a,b)=>b[1]-a[1]).slice(0,10);
+      topArtistas.forEach(([nombre, count]) => {
+        const p = document.createElement('p');
+        p.textContent = `${nombre} (${count} reproducciones)`;
+        container.appendChild(p);
+      });
+    }
+
+    // Cargar top tracks
+    fetch('top_tracks.json')
+      .then(res => res.json())
+      .then(data => mostrarTracks('.top-tracks', data.items))
+      .catch(err => console.error('Error cargando top_tracks.json', err));
+
+    // Cargar recently played
+    fetch('recently_played.json')
+      .then(res => res.json())
+      .then(data => mostrarTracks('.recently-played', data.items.map(item => item.track)))
+      .catch(err => console.error('Error cargando recently_played.json', err));
+
+    // Mostrar artistas más escuchados a partir de top tracks
+    fetch('top_tracks.json')
+      .then(res => res.json())
+      .then(data => mostrarArtistas('.top-artists', data.items))
+      .catch(err => console.error('Error cargando top_tracks.json para artistas', err));
+  </script>
 </body>
 </html>
 
