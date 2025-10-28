@@ -1,53 +1,205 @@
-<script>
-  // Datos simplificados
-  const topTracksData = [
-    {"name": "Insurreccion (En Directo)", "artist": "El Último De La Fila"},
-    {"name": "L'amore conta", "artist": "Ligabue"},
-    {"name": "Barfuß am Klavier", "artist": "AnnenMayKantereit"}
-  ];
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Mis Top Canciones - Spotify</title>
+  <style>
+    body { font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial; padding: 1rem; max-width: 800px; margin: auto; }
+    .section { margin-bottom: 1.5rem; }
+    .item { padding: 0.5rem 0; border-bottom: 1px solid #eee; display:flex; gap:1rem; align-items:center; }
+    .info p { margin: 0; }
+    .artist { color: #666; font-size: 0.9rem; }
+    h2 { margin: 0 0 .5rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Spotify — Mis Top Canciones</h1>
 
-  const recentlyPlayedData = [
-    {"name": "Monument Valley", "artist": "Leviro"},
-    {"name": "In the Sky", "artist": "POURI X"}
-  ];
+  <div class="section">
+    <h2>Recently played</h2>
+    <div id="recently-played">Cargando...</div>
+  </div>
 
-  function mostrarTracks(containerId, items) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-    items.forEach(track => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `
-        <div class="info">
-          <p>${track.name}</p>
-          <p class="artist">${track.artist}</p>
-        </div>
-      `;
-      container.appendChild(div);
-    });
-  }
+  <div class="section">
+    <h2>Top tracks</h2>
+    <div id="top-tracks">Cargando...</div>
+  </div>
 
-  function mostrarArtistas(containerId, items) {
-    const container = document.getElementById(containerId);
-    container.innerHTML = "";
-    const artistas = {};
-    items.forEach(track => {
-      artistas[track.artist] = (artistas[track.artist] || 0) + 1;
-    });
-    const artistasOrdenados = Object.entries(artistas)
-      .sort((a,b) => b[1]-a[1])
-      .slice(0,10);
-    artistasOrdenados.forEach(([name, count]) => {
-      const div = document.createElement("div");
-      div.className = "item";
-      div.innerHTML = `<div class="info"><p>${name}</p><p class="artist">Reproducciones: ${count}</p></div>`;
-      container.appendChild(div);
-    });
-  }
+  <div class="section">
+    <h2>Top artists</h2>
+    <div id="top-artists">Cargando...</div>
+  </div>
 
-  mostrarTracks("recently-played", recentlyPlayedData);
-  mostrarTracks("top-tracks", topTracksData);
-  mostrarArtistas("top-artists", topTracksData);
-</script>
+  <script>
+    // Fallback de ejemplo para desarrollo local si no hay archivos JSON
+    const fallbackTopTracks = [
+      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila" },
+      { name: "L'amore conta", artist: "Ligabue" },
+      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit" }
+    ];
+    const fallbackRecentlyPlayed = [
+      { name: "Monument Valley", artist: "Leviro" },
+      { name: "In the Sky", artist: "POURI X" }
+    ];
+
+    function mostrarTracks(containerId, items) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      if (!items || items.length === 0) {
+        container.textContent = "No hay canciones para mostrar.";
+        return;
+      }
+      items.forEach(track => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <div class="info">
+            <p>${escapeHtml(track.name)}</p>
+            <p class="artist">${escapeHtml(track.artist || "Desconocido")}</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function mostrarArtistas(containerId, tracks) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      if (!tracks || tracks.length === 0) {
+        container.textContent = "No hay artistas para mostrar.";
+        return;
+      }
+      const artistas = {};
+      tracks.forEach(track => {
+        // track puede ser {artist: "Nombre"} o {artists: ["A","B"]} o {artists: [{name:...}]}
+        if (track.artist) {
+          artistas[track.artist] = (artistas[track.artist] || 0) + 1;
+        } else if (track.artists && Array.isArray(track.artists)) {
+          // soportar array de strings o array de objetos {name:...}
+          track.artists.forEach(a => {
+            const nombre = (typeof a === "string") ? a : (a && a.name) ? a.name : "Desconocido";
+            artistas[nombre] = (artistas[nombre] || 0) + 1;
+          });
+        }
+      });
+      const orden = Object.entries(artistas).sort((a,b) => b[1] - a[1]);
+      if (orden.length === 0) {
+        container.textContent = "No hay artistas para mostrar.";
+        return;
+      }
+      orden.forEach(([name, count]) => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `<div class="info"><p>${escapeHtml(name)}</p><p class="artist">Reproducciones: ${count}</p></div>`;
+        container.appendChild(div);
+      });
+    }
+
+    // simple escape para evitar inyección si proviene de JSON externo
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    async function loadJson(path) {
+      try {
+        const res = await fetch(path, { cache: "no-store" });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return await res.json();
+      } catch (err) {
+        console.warn(`No se pudo cargar ${path}:`, err);
+        return null;
+      }
+    }
+
+    async function loadAndRender() {
+      // Intentar cargar los archivos generados por la Action
+      const topDataRaw = await loadJson('/top_tracks.json');
+      const recentDataRaw = await loadJson('/recently_played.json');
+
+      // Normalizar top tracks
+      let topTracks = [];
+      if (topDataRaw) {
+        // Spotify API devuelve { items: [track,...], ... }
+        if (Array.isArray(topDataRaw)) {
+          // por si guardaste un array directamente
+          topTracks = topDataRaw.map(t => normalizeTrack(t));
+        } else if (Array.isArray(topDataRaw.items)) {
+          topTracks = topDataRaw.items.map(t => normalizeTrack(t));
+        } else {
+          console.warn('Estructura inesperada en top_tracks.json, usando fallback si está disponible.');
+        }
+      }
+
+      // Normalizar recently played
+      let recentTracks = [];
+      if (recentDataRaw) {
+        // Spotify: { items: [ { track: {...}, played_at: ... }, ... ] }
+        if (Array.isArray(recentDataRaw.items)) {
+          recentTracks = recentDataRaw.items.map(it => {
+            if (it && it.track) return normalizeTrack(it.track);
+            // si el item ya es un track
+            return normalizeTrack(it);
+          });
+        } else if (Array.isArray(recentDataRaw)) {
+          recentTracks = recentDataRaw.map(t => normalizeTrack(t));
+        } else {
+          console.warn('Estructura inesperada en recently_played.json, usando fallback si está disponible.');
+        }
+      }
+
+      // Si no hay datos desde archivos, usar fallback de ejemplo
+      if (topTracks.length === 0) topTracks = fallbackTopTracks;
+      if (recentTracks.length === 0) recentTracks = fallbackRecentlyPlayed;
+
+      mostrarTracks('top-tracks', topTracks);
+      mostrarTracks('recently-played', recentTracks);
+
+      // Para top artists podemos usar topTracks o combinar ambos arrays
+      const combined = [...topTracks, ...recentTracks];
+      mostrarArtistas('top-artists', combined);
+    }
+
+    // Convierte un objeto track (API) a la forma {name, artist, artists}
+    function normalizeTrack(t) {
+      if (!t) return { name: 'Desconocido', artist: 'Desconocido' };
+      // Caso: ya tiene name y artist simple
+      if (t.name && t.artist && !t.artists) {
+        return { name: t.name, artist: t.artist };
+      }
+      // Caso: objeto de Spotify track
+      const name = t.name || (t.track && t.track.name) || 'Desconocido';
+      // Obtener lista de artistas si existe
+      let artistsArr = [];
+      if (Array.isArray(t.artists)) {
+        artistsArr = t.artists.map(a => (typeof a === 'string') ? a : (a && a.name) ? a.name : 'Desconocido');
+      } else if (t.artists && Array.isArray(t.artists)) {
+        artistsArr = t.artists.map(a => a.name || 'Desconocido');
+      } else if (t.artist) {
+        artistsArr = [t.artist];
+      } else if (t.artists && typeof t.artists === 'string') {
+        artistsArr = [t.artists];
+      } else if (t.track && Array.isArray(t.track.artists)) {
+        artistsArr = t.track.artists.map(a => a.name || 'Desconocido');
+      }
+
+      return {
+        name,
+        artist: artistsArr[0] || 'Desconocido',
+        artists: artistsArr
+      };
+    }
+
+    // Ejecutar al cargar
+    loadAndRender();
+  </script>
+</body>
+</html>
 
 
