@@ -1,131 +1,56 @@
-<!doctype html>
-<html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Spotify Stats - silanton</title>
-  <style>
-    body {
-      font-family: "Inter", Arial, sans-serif;
-      margin: 0;
-      padding: 40px 20px;
-      background: linear-gradient(135deg, #121212, #1e1e1e);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 { text-align: center; margin-bottom: 40px; font-size: 28px; color: #1db954; }
-    a { color: #1db954; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .card {
-      background: #181818;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      padding: 20px 30px;
-      margin-bottom: 30px;
-      max-width: 800px;
-      width: 100%;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
-    }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.5); }
-    .card h2 { font-size: 18px; margin-bottom: 15px; color: #fff; }
-
-    .item { display: flex; align-items: center; border-bottom: 1px solid #2a2a2a; padding: 12px 0; }
-    .item:last-child { border-bottom: none; }
-    .item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
-    .info { flex: 1; }
-    .info p { margin: 0; font-size: 14px; }
-    .info p.artist { color: #b3b3b3; margin-top: 4px; }
-    .popularity { font-size: 13px; color: #b3b3b3; text-align: right; }
-
-    @media (max-width: 600px) {
-      .item { flex-direction: column; align-items: flex-start; }
-      .item img { margin-bottom: 10px; }
-      .popularity { align-self: flex-start; margin-top: 5px; }
-    }
-  </style>
-</head>
-<body>
-  <h1>🎧 Spotify Stats de <a href="https://open.spotify.com/user/silanton">silanton</a></h1>
-
-  <!-- Últimas canciones reproducidas -->
-  <div class="card">
-    <h2>Últimas canciones reproducidas</h2>
-    <div id="recently-played"></div>
-  </div>
-
-  <!-- Canciones más reproducidas -->
-  <div class="card">
-    <h2>Canciones más reproducidas</h2>
-    <div id="top-tracks"></div>
-  </div>
-
-  <!-- Artistas más escuchados -->
-  <div class="card">
-    <h2>Artistas más escuchados</h2>
-    <div id="top-artists"></div>
-  </div>
-
-  <script>
-    {
-  "top_tracks": [
+<script>
+  // Tus datos JSON simplificados
+  const topTracksData = [
     {"name": "Insurreccion (En Directo)", "artist": "El Último De La Fila"},
     {"name": "L'amore conta", "artist": "Ligabue"},
     {"name": "Barfuß am Klavier", "artist": "AnnenMayKantereit"}
-  ],
-  "recently_played": [
+  ];
+
+  const recentlyPlayedData = [
     {"name": "Monument Valley", "artist": "Leviro"},
     {"name": "In the Sky", "artist": "POURI X"}
-  ]
-}
-    // Mostrar canciones
-    function mostrarTracks(containerId, items, isTop=false) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = "";
-      items.forEach(track => {
-        const img = track.album.images[1]?.url || "";
-        const artists = track.artists.map(a => a.name).join(", ");
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <img src="${img}" alt="${track.name}">
-          <div class="info">
-            <p>${track.name}</p>
-            <p class="artist">${artists}</p>
-          </div>
-          ${isTop ? `<div class="popularity">${track.popularity}</div>` : ""}
-        `;
-        container.appendChild(div);
-      });
-    }
+  ];
 
-    function mostrarArtistas(containerId, items) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = "";
-      const artistas = {};
-      items.forEach(track => {
-        track.artists.forEach(a => {
-          artistas[a.name] = (artistas[a.name] || 0) + 1;
-        });
-      });
-      const artistasOrdenados = Object.entries(artistas)
-        .sort((a,b) => b[1] - a[1])
-        .slice(0,10);
-      artistasOrdenados.forEach(([name, count]) => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `<div class="info"><p>${name}</p><p class="artist">Reproducciones: ${count}</p></div>`;
-        container.appendChild(div);
-      });
-    }
+  // Mostrar canciones
+  function mostrarTracks(containerId, items) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    items.forEach(track => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `
+        <div class="info">
+          <p>${track.name}</p>
+          <p class="artist">${track.artist}</p>
+        </div>
+      `;
+      container.appendChild(div);
+    });
+  }
 
-    mostrarTracks("recently-played", recentlyPlayedData.items.map(i => i.track));
-    mostrarTracks("top-tracks", topTracksData.items, true);
-    mostrarArtistas("top-artists", topTracksData.items);
-  </script>
-</body>
-</html>
+  // Mostrar artistas más escuchados
+  function mostrarArtistas(containerId, items) {
+    const container = document.getElementById(containerId);
+    container.innerHTML = "";
+    const artistas = {};
+    items.forEach(track => {
+      artistas[track.artist] = (artistas[track.artist] || 0) + 1;
+    });
+    const artistasOrdenados = Object.entries(artistas)
+      .sort((a,b) => b[1]-a[1])
+      .slice(0,10);
+    artistasOrdenados.forEach(([name, count]) => {
+      const div = document.createElement("div");
+      div.className = "item";
+      div.innerHTML = `<div class="info"><p>${name}</p><p class="artist">Reproducciones: ${count}</p></div>`;
+      container.appendChild(div);
+    });
+  }
+
+  mostrarTracks("recently-played", recentlyPlayedData);
+  mostrarTracks("top-tracks", topTracksData);
+  mostrarArtistas("top-artists", topTracksData);
+</script>
+
 
 
