@@ -15,12 +15,7 @@
       flex-direction: column;
       align-items: center;
     }
-    h1 {
-      text-align: center;
-      margin-bottom: 40px;
-      font-size: 28px;
-      color: #1db954;
-    }
+    h1 { text-align: center; margin-bottom: 40px; font-size: 28px; color: #1db954; }
     a { color: #1db954; text-decoration: none; }
     a:hover { text-decoration: underline; }
 
@@ -58,77 +53,80 @@
   <!-- Últimas canciones reproducidas -->
   <div class="card">
     <h2>Últimas canciones reproducidas</h2>
-    <div class="recently-played">Cargando...</div>
-  </div>
-
-  <!-- Artistas más escuchados -->
-  <div class="card">
-    <h2>Artistas más escuchados</h2>
-    <div class="top-artists">Cargando...</div>
+    <div id="recently-played"></div>
   </div>
 
   <!-- Canciones más reproducidas -->
   <div class="card">
     <h2>Canciones más reproducidas</h2>
-    <div class="top-tracks">Cargando...</div>
+    <div id="top-tracks"></div>
+  </div>
+
+  <!-- Artistas más escuchados -->
+  <div class="card">
+    <h2>Artistas más escuchados</h2>
+    <div id="top-artists"></div>
   </div>
 
   <script>
-    // Crear un item de canción
-    function crearItem(track) {
-      const div = document.createElement('div');
-      div.className = 'item';
-      div.innerHTML = `
-        <img src="${track.album.images[1]?.url || ''}" alt="${track.name}">
-        <div class="info">
-          <p><a href="${track.external_urls.spotify}" target="_blank">${track.name}</a></p>
-          <p class="artist">${track.artists.map(a => a.name).join(', ')}</p>
-        </div>
-        <div class="popularity">${track.popularity}</div>
-      `;
-      return div;
-    }
+    // --- PEGA AQUÍ EL CONTENIDO DE recently_played.json ---
+    const recentlyPlayedData = {
+      "items": [
+        /* ... tu contenido de recently_played.json ... */
+      ]
+    };
 
-    // Mostrar tracks en un contenedor
-    function mostrarTracks(containerSelector, tracks) {
-      const container = document.querySelector(containerSelector);
-      container.innerHTML = ''; // Limpiar contenido inicial
-      tracks.forEach(track => container.appendChild(crearItem(track)));
-    }
+    // --- PEGA AQUÍ EL CONTENIDO DE top_tracks.json ---
+    const topTracksData = {
+      "items": [
+        /* ... tu contenido de top_tracks.json ... */
+      ]
+    };
 
-    // Mostrar artistas más escuchados
-    function mostrarArtistas(containerSelector, tracks) {
-      const container = document.querySelector(containerSelector);
-      container.innerHTML = '';
-      const artistas = {};
-      tracks.forEach(track => track.artists.forEach(a => {
-        artistas[a.name] = (artistas[a.name] || 0) + 1;
-      }));
-      const topArtistas = Object.entries(artistas).sort((a,b)=>b[1]-a[1]).slice(0,10);
-      topArtistas.forEach(([nombre, count]) => {
-        const p = document.createElement('p');
-        p.textContent = `${nombre} (${count} reproducciones)`;
-        container.appendChild(p);
+    // Mostrar canciones
+    function mostrarTracks(containerId, items, isTop=false) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      items.forEach(track => {
+        const img = track.album.images[1]?.url || "";
+        const artists = track.artists.map(a => a.name).join(", ");
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <img src="${img}" alt="${track.name}">
+          <div class="info">
+            <p>${track.name}</p>
+            <p class="artist">${artists}</p>
+          </div>
+          ${isTop ? `<div class="popularity">${track.popularity}</div>` : ""}
+        `;
+        container.appendChild(div);
       });
     }
 
-    // Cargar top tracks
-    fetch('top_tracks.json')
-      .then(res => res.json())
-      .then(data => mostrarTracks('.top-tracks', data.items))
-      .catch(err => console.error('Error cargando top_tracks.json', err));
+    function mostrarArtistas(containerId, items) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      const artistas = {};
+      items.forEach(track => {
+        track.artists.forEach(a => {
+          artistas[a.name] = (artistas[a.name] || 0) + 1;
+        });
+      });
+      const artistasOrdenados = Object.entries(artistas)
+        .sort((a,b) => b[1] - a[1])
+        .slice(0,10);
+      artistasOrdenados.forEach(([name, count]) => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `<div class="info"><p>${name}</p><p class="artist">Reproducciones: ${count}</p></div>`;
+        container.appendChild(div);
+      });
+    }
 
-    // Cargar recently played
-    fetch('recently_played.json')
-      .then(res => res.json())
-      .then(data => mostrarTracks('.recently-played', data.items.map(item => item.track)))
-      .catch(err => console.error('Error cargando recently_played.json', err));
-
-    // Mostrar artistas más escuchados a partir de top tracks
-    fetch('top_tracks.json')
-      .then(res => res.json())
-      .then(data => mostrarArtistas('.top-artists', data.items))
-      .catch(err => console.error('Error cargando top_tracks.json para artistas', err));
+    mostrarTracks("recently-played", recentlyPlayedData.items.map(i => i.track));
+    mostrarTracks("top-tracks", topTracksData.items, true);
+    mostrarArtistas("top-artists", topTracksData.items);
   </script>
 </body>
 </html>
