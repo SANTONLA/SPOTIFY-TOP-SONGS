@@ -24,6 +24,7 @@ jobs:
           
           ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
           echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
+          echo "Access token generado correctamente."
 
       - name: Generar estadísticas de Spotify
         uses: SANTONLA/spotify-stats-action@main
@@ -34,6 +35,27 @@ jobs:
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
           SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
           ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
+
+      - name: Listar archivos generados
+        run: |
+          echo "Archivos en el directorio:"
+          ls -lah
+
+      - name: Mostrar top tracks y recently played
+        run: |
+          if [ -f "top_tracks.json" ]; then
+            echo "Top Tracks:"
+            cat top_tracks.json | jq '.items[] | "\(.name) - \(.artists[0].name)"'
+          else
+            echo "No se encontró top_tracks.json"
+          fi
+
+          if [ -f "recently_played.json" ]; then
+            echo "Recently Played:"
+            cat recently_played.json | jq '.items[] | "\(.track.name) - \(.track.artists[0].name)"'
+          else
+            echo "No se encontró recently_played.json"
+          fi
 
       - name: Commit y push de resultados
         run: |
