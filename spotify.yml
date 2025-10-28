@@ -44,11 +44,11 @@ jobs:
           echo ""
           echo "Recently Played:"
           grep -E '"name"|"artists"' recently_played.json | sed -E 's/.*"name": ?"([^"]*)".*/\1/' | awk 'NR%2{printf "%s - ", $0; next}1'
-       - name: Debug archivos generados
-          run: |
+
+      - name: Debug archivos generados
+        run: |
           echo "Archivos en el directorio actual:"
           ls -lah
-
 
       - name: Commit y push de resultados
         run: |
@@ -57,3 +57,4 @@ jobs:
           git add top_tracks.json recently_played.json
           git commit -m "Actualización automática de Spotify Stats" || echo "No hay cambios"
           git push
+
