@@ -1,5 +1,5 @@
 <script>
-  // Tus datos JSON simplificados
+  // Datos simplificados
   const topTracksData = [
     {"name": "Insurreccion (En Directo)", "artist": "El Último De La Fila"},
     {"name": "L'amore conta", "artist": "Ligabue"},
@@ -11,7 +11,6 @@
     {"name": "In the Sky", "artist": "POURI X"}
   ];
 
-  // Mostrar canciones
   function mostrarTracks(containerId, items) {
     const container = document.getElementById(containerId);
     container.innerHTML = "";
@@ -28,7 +27,6 @@
     });
   }
 
-  // Mostrar artistas más escuchados
   function mostrarArtistas(containerId, items) {
     const container = document.getElementById(containerId);
     container.innerHTML = "";
@@ -51,6 +49,5 @@
   mostrarTracks("top-tracks", topTracksData);
   mostrarArtistas("top-artists", topTracksData);
 </script>
-
 
 
