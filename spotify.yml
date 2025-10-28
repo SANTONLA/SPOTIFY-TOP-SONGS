@@ -12,9 +12,13 @@ jobs:
       - name: Clonar repositorio
         uses: actions/checkout@v4
 
+      - name: Instalar jq
+        run: sudo apt-get update && sudo apt-get install -y jq
+
       - name: Obtener access token de Spotify
         id: spotify_token
         run: |
+          echo "Generando token de Spotify..."
           RESPONSE=$(curl -s -X POST "https://accounts.spotify.com/api/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "grant_type=refresh_token" \
@@ -22,39 +26,47 @@ jobs:
             -d "client_id=${{ secrets.SPOTIFY_CLIENT_ID }}" \
             -d "client_secret=${{ secrets.SPOTIFY_CLIENT_SECRET }}")
           
-          ACCESS_TOKEN=$(echo $RESPONSE | sed -n 's/.*"access_token":"\([^"]*\)".*/\1/p')
+          ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
+          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
+            echo "ERROR: No se generó access token"
+            echo "Respuesta: $RESPONSE"
+            exit 1
+          fi
           echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
           echo "Access token generado correctamente."
 
       - name: Obtener top tracks y recently played
         run: |
-          # Top tracks
+          echo "Obteniendo Top Tracks..."
           curl -s -X GET "https://api.spotify.com/v1/me/top/tracks?limit=10" \
             -H "Authorization: Bearer $ACCESS_TOKEN" > top_tracks.json
-          
-          # Recently played
+
+          echo "Obteniendo Recently Played..."
           curl -s -X GET "https://api.spotify.com/v1/me/player/recently-played?limit=10" \
             -H "Authorization: Bearer $ACCESS_TOKEN" > recently_played.json
+
+      - name: Comprobar datos obtenidos
+        run: |
+          echo "Top Tracks JSON:"
+          cat top_tracks.json
+          echo ""
+          echo "Recently Played JSON:"
+          cat recently_played.json
 
       - name: Mostrar top tracks y recently played
         run: |
           echo "Top Tracks:"
-          grep -E '"name"|"artists"' top_tracks.json | sed -E 's/.*"name": ?"([^"]*)".*/\1/' | awk 'NR%2{printf "%s - ", $0; next}1'
-          
+          jq -r '.items[] | "\(.name) - \(.artists[0].name)"' top_tracks.json
+
           echo ""
           echo "Recently Played:"
-          grep -E '"name"|"artists"' recently_played.json | sed -E 's/.*"name": ?"([^"]*)".*/\1/' | awk 'NR%2{printf "%s - ", $0; next}1'
-
-      - name: Debug archivos generados
-        run: |
-          echo "Archivos en el directorio actual:"
-          ls -lah
+          jq -r '.items[] | "\(.track.name) - \(.track.artists[0].name)"' recently_played.json
 
       - name: Commit y push de resultados
         run: |
           git config --local user.email "actions@github.com"
           git config --local user.name "GitHub Action"
           git add top_tracks.json recently_played.json
-          git commit -m "Actualización automática de Spotify Stats" || echo "No hay cambios"
+          git diff --cached --quiet || git commit -m "Actualización automática de Spotify Stats"
           git push
 
