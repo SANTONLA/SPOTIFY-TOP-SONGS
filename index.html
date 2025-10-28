@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Spotify Stats - silanton</title>
   <style>
-    /* ====== ESTILOS GENERALES ====== */
     body {
       font-family: "Inter", Arial, sans-serif;
       margin: 0;
@@ -16,98 +15,40 @@
       flex-direction: column;
       align-items: center;
     }
-
     h1 {
       text-align: center;
       margin-bottom: 40px;
       font-size: 28px;
       color: #1db954;
     }
+    a { color: #1db954; text-decoration: none; }
+    a:hover { text-decoration: underline; }
 
-    a {
-      color: #1db954;
-      text-decoration: none;
-    }
-
-    a:hover {
-      text-decoration: underline;
-    }
-
-    /* ====== TARJETAS DE SECCIONES ====== */
     .card {
       background: #181818;
       border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
       padding: 20px 30px;
       margin-bottom: 30px;
       max-width: 800px;
       width: 100%;
       transition: transform 0.2s ease, box-shadow 0.3s ease;
     }
+    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.5); }
+    .card h2 { font-size: 18px; margin-bottom: 15px; color: #fff; }
 
-    .card:hover {
-      transform: translateY(-3px);
-      box-shadow: 0 8px 18px rgba(0, 0, 0, 0.5);
-    }
-
-    .card h2 {
-      font-size: 18px;
-      margin-bottom: 15px;
-      color: #fff;
-    }
-
-    /* ====== LISTA DE ITEMS ====== */
-    .item {
-      display: flex;
-      align-items: center;
-      border-bottom: 1px solid #2a2a2a;
-      padding: 12px 0;
-    }
-
-    .item:last-child {
-      border-bottom: none;
-    }
-
-    .item img {
-      width: 60px;
-      height: 60px;
-      border-radius: 8px;
-      object-fit: cover;
-      margin-right: 15px;
-    }
-
-    .info {
-      flex: 1;
-    }
-
-    .info p {
-      margin: 0;
-      font-size: 14px;
-    }
-
-    .info p.artist {
-      color: #b3b3b3;
-      margin-top: 4px;
-    }
-
-    .popularity {
-      font-size: 13px;
-      color: #b3b3b3;
-      text-align: right;
-    }
+    .item { display: flex; align-items: center; border-bottom: 1px solid #2a2a2a; padding: 12px 0; }
+    .item:last-child { border-bottom: none; }
+    .item img { width: 60px; height: 60px; border-radius: 8px; object-fit: cover; margin-right: 15px; }
+    .info { flex: 1; }
+    .info p { margin: 0; font-size: 14px; }
+    .info p.artist { color: #b3b3b3; margin-top: 4px; }
+    .popularity { font-size: 13px; color: #b3b3b3; text-align: right; }
 
     @media (max-width: 600px) {
-      .item {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-      .item img {
-        margin-bottom: 10px;
-      }
-      .popularity {
-        align-self: flex-start;
-        margin-top: 5px;
-      }
+      .item { flex-direction: column; align-items: flex-start; }
+      .item img { margin-bottom: 10px; }
+      .popularity { align-self: flex-start; margin-top: 5px; }
     }
   </style>
 </head>
@@ -117,68 +58,24 @@
   <!-- Sección: Últimas canciones reproducidas -->
   <div class="card">
     <h2>Últimas canciones reproducidas</h2>
-    <div class="item">
-      <img src="https://i.scdn.co/image/ab67616d0000b273bbaf9de6c418a0aa6cb7b938" alt="Goth">
-      <div class="info">
-        <p><a href="https://open.spotify.com/track/0uMZbmAAgOhdMrv25iPEH6"><strong>Goth</strong></a></p>
-        <p class="artist"><a href="https://open.spotify.com/artist/48nHO1cuTbpx4ELhChsxX1">Sidewalks and Skeletons</a></p>
-      </div>
-    </div>
-    <div class="item">
-      <img src="https://i.scdn.co/image/ab67616d0000b2736a922a01d3fb1c53873b1f9d" alt="MONTAGEM - PR FUNK">
-      <div class="info">
-        <p><a href="https://open.spotify.com/track/6njJR3OIp3oA0Kc4aC9Tzf"><strong>MONTAGEM - PR FUNK</strong></a></p>
-        <p class="artist">S3BZS, Mc Gw, Mc Menor Do Alvorada</p>
-      </div>
-    </div>
-    <div class="item">
-      <img src="https://i.scdn.co/image/ab67616d0000b2736a31f70030d3de5fd9b843b6" alt="Milkshake 20">
-      <div class="info">
-        <p><a href="https://open.spotify.com/track/49wEdWGkL2CcOrXEKklXtJ"><strong>Milkshake 20 - Alex Wann Remix</strong></a></p>
-        <p class="artist">Kelis, Alex Wann</p>
-      </div>
-    </div>
+    <!-- Aquí la GitHub Action reemplazará con tus datos reales -->
+    <p style="color: #b3b3b3; font-size: 14px;">Tus canciones se mostrarán automáticamente aquí después de que la GitHub Action se ejecute.</p>
   </div>
 
   <!-- Sección: Artistas más escuchados -->
   <div class="card">
     <h2>Artistas más escuchados</h2>
-    <div class="item">
-      <img src="https://i.scdn.co/image/ab6761610000e5eb8aa0ff279be0623fce3e6c9d" alt="Marracash">
-      <div class="info">
-        <p><a href="https://open.spotify.com/artist/5AZuEF0feCXMkUCwQiQlW7"><strong>Marracash</strong></a></p>
-        <p class="artist">italian trap</p>
-      </div>
-      <p class="popularity">Popularidad: 75%</p>
-    </div>
-    <div class="item">
-      <img src="https://i.scdn.co/image/ab6761610000e5ebdf17e6585404841088292a25" alt="Lucio Corsi">
-      <div class="info">
-        <p><a href="https://open.spotify.com/artist/1rGpYQGiwKelukgqpI6xKx"><strong>Lucio Corsi</strong></a></p>
-        <p class="artist">italian singer-songwriter</p>
-      </div>
-      <p class="popularity">Popularidad: 66%</p>
-    </div>
+    <p style="color: #b3b3b3; font-size: 14px;">Tus artistas favoritos aparecerán aquí automáticamente.</p>
   </div>
 
   <!-- Sección: Canciones más reproducidas -->
   <div class="card">
     <h2>Canciones más reproducidas</h2>
-    <div class="item">
-      <img src="https://i.scdn.co/image/ab67616d0000b273399b1dc0d027f8e4c36648cb" alt="Roi - Sped Up">
-      <div class="info">
-        <p><a href="https://open.spotify.com/track/23vZqJEwX9lKdWxGDpBF7G"><strong>Roi - Sped Up</strong></a></p>
-        <p class="artist">skyemane</p>
-      </div>
-    </div>
-    <div class="item">
-      <img src="https://i.scdn.co/image/ab67616d0000b27383627891f19fcba34ca5f1ae" alt="Occhiaie">
-      <div class="info">
-        <p><a href="https://open.spotify.com/track/7i7iqHvilL3S95Np8Pg6iX"><strong>Occhiaie</strong></a></p>
-        <p class="artist">Galeffi</p>
-      </div>
-    </div>
+    <p style="color: #b3b3b3; font-size: 14px;">Tus top tracks se mostrarán aquí automáticamente.</p>
   </div>
+</body>
+</html>
+
 
 </body>
 </html>
