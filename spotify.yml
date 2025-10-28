@@ -6,12 +6,24 @@ on:
   workflow_dispatch:
 
 jobs:
-  update:
+  spotify:
     runs-on: ubuntu-latest
-
     steps:
       - name: Clonar repositorio
         uses: actions/checkout@v4
+
+      - name: Obtener access token de Spotify
+        id: spotify_token
+        run: |
+          RESPONSE=$(curl -s -X POST "https://accounts.spotify.com/api/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=refresh_token" \
+            -d "refresh_token=${{ secrets.SPOTIFY_REFRESH_TOKEN }}" \
+            -d "client_id=${{ secrets.SPOTIFY_CLIENT_ID }}" \
+            -d "client_secret=${{ secrets.SPOTIFY_CLIENT_SECRET }}")
+          
+          ACCESS_TOKEN=$(echo $RESPONSE | jq -r '.access_token')
+          echo "ACCESS_TOKEN=$ACCESS_TOKEN" >> $GITHUB_ENV
 
       - name: Generar estadísticas de Spotify
         uses: SANTONLA/spotify-stats-action@main
@@ -20,6 +32,8 @@ jobs:
         env:
           SPOTIFY_CLIENT_ID: ${{ secrets.SPOTIFY_CLIENT_ID }}
           SPOTIFY_CLIENT_SECRET: ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+          SPOTIFY_REFRESH_TOKEN: ${{ secrets.SPOTIFY_REFRESH_TOKEN }}
+          ACCESS_TOKEN: ${{ env.ACCESS_TOKEN }}
 
       - name: Commit y push de resultados
         run: |
@@ -28,3 +42,4 @@ jobs:
           git add .
           git commit -m "Actualización automática de Spotify Stats" || echo "No hay cambios"
           git push
+
