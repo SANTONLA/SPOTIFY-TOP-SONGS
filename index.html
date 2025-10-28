@@ -3,83 +3,58 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Spotify Stats - silanton</title>
+  <title>Mis Top Canciones - Spotify</title>
   <style>
     body {
-      font-family: "Inter", Arial, sans-serif;
-      margin: 0;
-      padding: 40px 20px;
-      background: linear-gradient(135deg, #121212, #1e1e1e);
-      color: #fff;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    h1 { text-align: center; margin-bottom: 40px; font-size: 28px; color: #1db954; }
-    a { color: #1db954; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    .card {
-      background: #181818;
-      border-radius: 16px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-      padding: 20px 30px;
-      margin-bottom: 30px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+      padding: 1rem;
       max-width: 800px;
-      width: 100%;
-      transition: transform 0.2s ease, box-shadow 0.3s ease;
+      margin: auto;
+      background: #121212;
+      color: #fff;
     }
-    .card:hover { transform: translateY(-3px); box-shadow: 0 8px 18px rgba(0,0,0,0.5); }
-    .card h2 { font-size: 18px; margin-bottom: 15px; color: #fff; }
-
-    .item { display: flex; align-items: center; border-bottom: 1px solid #2a2a2a; padding: 12px 0; }
-    .item:last-child { border-bottom: none; }
-    .info { flex: 1; }
+    .section { margin-bottom: 1.5rem; }
+    .item { padding: 0.5rem 0; border-bottom: 1px solid #333; display:flex; gap:1rem; align-items:center; }
+    .item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
     .info p { margin: 0; }
-    .info p.artist { color: #b3b3b3; margin-top: 4px; }
-    .popularity { font-size: 13px; color: #b3b3b3; text-align: right; }
-
-    @media (max-width: 600px) {
-      .item { flex-direction: column; align-items: flex-start; }
-      .popularity { align-self: flex-start; margin-top: 5px; }
-    }
+    .artist { color: #b3b3b3; font-size: 0.9rem; }
+    h1 { text-align:center; margin-bottom:2rem; color:#1DB954; }
+    h2 { margin:0 0 .5rem 0; color:#1DB954; }
+    .popularity { margin-left:auto; font-size:0.8rem; color:#b3b3b3; }
   </style>
 </head>
 <body>
-  <h1>🎧 Spotify Stats de <a href="https://open.spotify.com/user/silanton">silanton</a></h1>
+  <h1>Spotify — Mis Top Canciones</h1>
 
-  <!-- Últimas canciones reproducidas -->
-  <div class="card">
-    <h2>Últimas canciones reproducidas</h2>
-    <div id="recently-played"></div>
+  <div class="section">
+    <h2>Recently Played</h2>
+    <div id="recently-played">Cargando...</div>
   </div>
 
-  <!-- Canciones más reproducidas -->
-  <div class="card">
-    <h2>Canciones más reproducidas</h2>
-    <div id="top-tracks"></div>
+  <div class="section">
+    <h2>Top Tracks</h2>
+    <div id="top-tracks">Cargando...</div>
   </div>
 
-  <!-- Artistas más escuchados -->
-  <div class="card">
-    <h2>Artistas más escuchados</h2>
-    <div id="top-artists"></div>
+  <div class="section">
+    <h2>Top Artists</h2>
+    <div id="top-artists">Cargando...</div>
   </div>
 
   <script>
-    // === DATOS DE EJEMPLO ===
+    // Datos de ejemplo
     const topTracksData = [
-      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila", popularity: 50 },
-      { name: "L'amore conta", artist: "Ligabue", popularity: 65 },
-      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit", popularity: 70 }
+      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila", popularity: 50, albumImage: "https://i.scdn.co/image/ab67616d0000b273EXAMPLE1" },
+      { name: "L'amore conta", artist: "Ligabue", popularity: 65, albumImage: "https://i.scdn.co/image/ab67616d0000b273EXAMPLE2" },
+      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit", popularity: 70, albumImage: "https://i.scdn.co/image/ab67616d0000b273EXAMPLE3" }
     ];
 
     const recentlyPlayedData = [
-      { name: "Monument Valley", artist: "Leviro" },
-      { name: "In the Sky", artist: "POURI X" }
+      { name: "Monument Valley", artist: "Leviro", albumImage: "https://i.scdn.co/image/ab67616d0000b273EXAMPLE4" },
+      { name: "In the Sky", artist: "POURI X", albumImage: "https://i.scdn.co/image/ab67616d0000b273EXAMPLE5" }
     ];
 
-    // === FUNCIONES DE RENDERIZADO ===
+    // Función para mostrar tracks
     function mostrarTracks(containerId, items, showPopularity=false) {
       const container = document.getElementById(containerId);
       container.innerHTML = "";
@@ -87,6 +62,7 @@
         const div = document.createElement("div");
         div.className = "item";
         div.innerHTML = `
+          <img src="${track.albumImage || ''}" alt="${track.name}">
           <div class="info">
             <p>${track.name}</p>
             <p class="artist">${track.artist}</p>
@@ -97,6 +73,7 @@
       });
     }
 
+    // Función para mostrar artistas
     function mostrarArtistas(containerId, tracks) {
       const container = document.getElementById(containerId);
       container.innerHTML = "";
@@ -113,7 +90,7 @@
       });
     }
 
-    // === EJECUTAR RENDERIZADO ===
+    // Mostrar datos
     mostrarTracks("recently-played", recentlyPlayedData);
     mostrarTracks("top-tracks", topTracksData, true);
     mostrarArtistas("top-artists", topTracksData.concat(recentlyPlayedData));
