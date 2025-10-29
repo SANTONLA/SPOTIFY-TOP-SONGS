@@ -14,13 +14,41 @@
       color: #fff;
     }
     .section { margin-bottom: 1.5rem; }
-    .item { padding: 0.5rem 0; border-bottom: 1px solid #333; display:flex; gap:1rem; align-items:center; }
-    .item img { width: 60px; height: 60px; object-fit: cover; border-radius: 8px; }
+    .item { 
+      padding: 0.5rem 0; 
+      border-bottom: 1px solid #333; 
+      display: flex; 
+      gap: 1rem; 
+      align-items: center; 
+    }
+    .item img { 
+      width: 120px; 
+      height: 120px; 
+      object-fit: cover; 
+      border-radius: 12px; 
+      background: #232323;
+      flex-shrink: 0;
+    }
     .info p { margin: 0; }
-    .artist { color: #b3b3b3; font-size: 0.9rem; }
-    h1 { text-align:center; margin-bottom:2rem; color:#1DB954; }
-    h2 { margin:0 0 .5rem 0; color:#1DB954; }
-    .popularity { margin-left:auto; font-size:0.8rem; color:#b3b3b3; }
+    .artist { color: #b3b3b3; font-size: 0.97rem; }
+    h1 { text-align: center; margin-bottom: 2rem; color: #1DB954; }
+    h2 { margin: 0 0 .5rem 0; color: #1DB954; }
+    .popularity { margin-left: auto; font-size: 0.9rem; color: #b3b3b3; }
+
+    /* Responsive styles */
+    @media (max-width: 600px) {
+      .item img {
+        width: 64px;
+        height: 64px;
+        border-radius: 8px;
+      }
+      .item {
+        gap: 0.75rem;
+        font-size: 0.98rem;
+      }
+      h1 { font-size: 1.35rem; }
+      h2 { font-size: 1.1rem; }
+    }
   </style>
 </head>
 <body>
@@ -42,16 +70,16 @@
   </div>
 
   <script>
-    // Datos de ejemplo con imágenes reales
+    // Datos de ejemplo con imágenes de Unsplash (alta resolución, se ajustan por CSS)
     const topTracksData = [
-      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila", popularity: 50, albumImage: "https://picsum.photos/id/1015/60/60" },
-      { name: "L'amore conta", artist: "Ligabue", popularity: 65, albumImage: "https://picsum.photos/id/1025/60/60" },
-      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit", popularity: 70, albumImage: "https://picsum.photos/id/1011/60/60" }
+      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila", popularity: 50, albumImage: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=240&h=240&fit=crop" },
+      { name: "L'amore conta", artist: "Ligabue", popularity: 65, albumImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=240&h=240&fit=crop" },
+      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit", popularity: 70, albumImage: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=240&h=240&fit=crop" }
     ];
 
     const recentlyPlayedData = [
-      { name: "Monument Valley", artist: "Leviro", albumImage: "https://picsum.photos/id/1005/60/60" },
-      { name: "In the Sky", artist: "POURI X", albumImage: "https://picsum.photos/id/1012/60/60" }
+      { name: "Monument Valley", artist: "Leviro", albumImage: "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?w=240&h=240&fit=crop" },
+      { name: "In the Sky", artist: "POURI X", albumImage: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=240&h=240&fit=crop" }
     ];
 
     // Función para mostrar tracks
@@ -62,12 +90,12 @@
         const div = document.createElement("div");
         div.className = "item";
         div.innerHTML = `
-          <img src="${track.albumImage || ''}" alt="${track.name}">
+          <img src="${track.albumImage || ''}" alt="${track.name}" onerror="this.src='https://via.placeholder.com/120x120?text=No+Img';">
           <div class="info">
             <p>${track.name}</p>
             <p class="artist">${track.artist}</p>
           </div>
-          ${showPopularity ? `<div class="popularity">${track.popularity}</div>` : ""}
+          ${showPopularity ? `<div class="popularity">Popularidad: ${track.popularity}</div>` : ""}
         `;
         container.appendChild(div);
       });
@@ -83,12 +111,12 @@
       });
       const orden = Object.entries(artistas).sort((a,b) => b[1]-a[1]);
       orden.forEach(([name, count], idx) => {
-        // Asignar imagen de artista aleatoria para la demo
-        const artistaImg = `https://picsum.photos/seed/artist${idx}/60/60`;
+        // Usar una imagen genérica distinta para cada artista (con seed)
+        const artistaImg = `https://images.unsplash.com/photo-15${idx+1}1671782779-c97d3d27a1d4?w=240&h=240&fit=crop`;
         const div = document.createElement("div");
         div.className = "item";
         div.innerHTML = `
-          <img src="${artistaImg}" alt="${name}">
+          <img src="${artistaImg}" alt="${name}" onerror="this.src='https://via.placeholder.com/120x120?text=Artista';">
           <div class="info">
             <p>${name}</p>
             <p class="artist">Reproducciones: ${count}</p>
@@ -105,4 +133,3 @@
   </script>
 </body>
 </html>
-
