@@ -69,16 +69,15 @@
   </div>
 
   <script>
-    // Imágenes de prueba (puedes cambiarlas por otras si quieres)
     const topTracksData = [
-      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila", popularity: 50, albumImage: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Pleiades_large.jpg" },
-      { name: "L'amore conta", artist: "Ligabue", popularity: 65, albumImage: "https://upload.wikimedia.org/wikipedia/commons/d/d6/Colosseo_2020.jpg" },
-      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit", popularity: 70, albumImage: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg" }
+      { name: "As It Was", artist: "Harry Styles", popularity: 95, albumImage: "https://upload.wikimedia.org/wikipedia/en/a/a5/Harry_Styles_-_As_It_Was.png" },
+      { name: "Blinding Lights", artist: "The Weeknd", popularity: 92, albumImage: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" },
+      { name: "Dance Monkey", artist: "Tones and I", popularity: 85, albumImage: "https://upload.wikimedia.org/wikipedia/en/0/0b/Tones_and_I_-_Dance_Monkey.png" }
     ];
 
     const recentlyPlayedData = [
-      { name: "Monument Valley", artist: "Leviro", albumImage: "https://upload.wikimedia.org/wikipedia/commons/2/28/Sillustani_-_panoramio.jpg" },
-      { name: "In the Sky", artist: "POURI X", albumImage: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Andromeda_Galaxy_%28with_h-alpha%29.jpg" }
+      { name: "Daylight", artist: "David Kushner", albumImage: "https://upload.wikimedia.org/wikipedia/en/e/e0/David_Kushner_-_Daylight.png" },
+      { name: "Watermelon Sugar", artist: "Harry Styles", albumImage: "https://upload.wikimedia.org/wikipedia/en/0/05/Harry_Styles_-_Watermelon_Sugar.png" }
     ];
 
     function mostrarTracks(containerId, items, showPopularity=false) {
@@ -107,15 +106,14 @@
         artistas[track.artist] = (artistas[track.artist] || 0) + 1;
       });
       const orden = Object.entries(artistas).sort((a,b) => b[1]-a[1]);
-      const artistaImgs = [
-        "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
-        "https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png",
-        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
-        "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg",
-        "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
-      ];
-      orden.forEach(([name, count], idx) => {
-        const artistaImg = artistaImgs[idx % artistaImgs.length];
+      const artistaImgs = {
+        "Harry Styles": "https://upload.wikimedia.org/wikipedia/commons/5/55/Harry_Styles_2022_%28cropped%29.jpg",
+        "The Weeknd": "https://upload.wikimedia.org/wikipedia/commons/d/d3/The_Weeknd_2018.png",
+        "Tones and I": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Tones_and_I_2019.png",
+        "David Kushner": "https://upload.wikimedia.org/wikipedia/commons/f/f9/David_Kushner_2023.png"
+      };
+      orden.forEach(([name, count]) => {
+        const artistaImg = artistaImgs[name] || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
         const div = document.createElement("div");
         div.className = "item";
         div.innerHTML = `
@@ -135,3 +133,4 @@
   </script>
 </body>
 </html>
+
