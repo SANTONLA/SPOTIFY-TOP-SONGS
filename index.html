@@ -35,7 +35,6 @@
     h2 { margin: 0 0 .5rem 0; color: #1DB954; }
     .popularity { margin-left: auto; font-size: 0.9rem; color: #b3b3b3; }
 
-    /* Responsive styles */
     @media (max-width: 600px) {
       .item img {
         width: 64px;
@@ -70,19 +69,18 @@
   </div>
 
   <script>
-    // Datos de ejemplo con imágenes de Unsplash (alta resolución, se ajustan por CSS)
+    // Imágenes de prueba (puedes cambiarlas por otras si quieres)
     const topTracksData = [
-      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila", popularity: 50, albumImage: "https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?w=240&h=240&fit=crop" },
-      { name: "L'amore conta", artist: "Ligabue", popularity: 65, albumImage: "https://images.unsplash.com/photo-1506744038136-46273834b3fb?w=240&h=240&fit=crop" },
-      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit", popularity: 70, albumImage: "https://images.unsplash.com/photo-1465101046530-73398c7f28ca?w=240&h=240&fit=crop" }
+      { name: "Insurreccion (En Directo)", artist: "El Último De La Fila", popularity: 50, albumImage: "https://upload.wikimedia.org/wikipedia/commons/4/4e/Pleiades_large.jpg" },
+      { name: "L'amore conta", artist: "Ligabue", popularity: 65, albumImage: "https://upload.wikimedia.org/wikipedia/commons/d/d6/Colosseo_2020.jpg" },
+      { name: "Barfuß am Klavier", artist: "AnnenMayKantereit", popularity: 70, albumImage: "https://upload.wikimedia.org/wikipedia/commons/3/3f/Fronalpstock_big.jpg" }
     ];
 
     const recentlyPlayedData = [
-      { name: "Monument Valley", artist: "Leviro", albumImage: "https://images.unsplash.com/photo-1465101178521-c1a9136a3b99?w=240&h=240&fit=crop" },
-      { name: "In the Sky", artist: "POURI X", albumImage: "https://images.unsplash.com/photo-1500534314209-a25ddb2bd429?w=240&h=240&fit=crop" }
+      { name: "Monument Valley", artist: "Leviro", albumImage: "https://upload.wikimedia.org/wikipedia/commons/2/28/Sillustani_-_panoramio.jpg" },
+      { name: "In the Sky", artist: "POURI X", albumImage: "https://upload.wikimedia.org/wikipedia/commons/a/a0/Andromeda_Galaxy_%28with_h-alpha%29.jpg" }
     ];
 
-    // Función para mostrar tracks
     function mostrarTracks(containerId, items, showPopularity=false) {
       const container = document.getElementById(containerId);
       container.innerHTML = "";
@@ -90,7 +88,7 @@
         const div = document.createElement("div");
         div.className = "item";
         div.innerHTML = `
-          <img src="${track.albumImage || ''}" alt="${track.name}" onerror="this.src='https://via.placeholder.com/120x120?text=No+Img';">
+          <img src="${track.albumImage}" alt="${track.name}">
           <div class="info">
             <p>${track.name}</p>
             <p class="artist">${track.artist}</p>
@@ -101,7 +99,6 @@
       });
     }
 
-    // Función para mostrar artistas
     function mostrarArtistas(containerId, tracks) {
       const container = document.getElementById(containerId);
       container.innerHTML = "";
@@ -110,13 +107,19 @@
         artistas[track.artist] = (artistas[track.artist] || 0) + 1;
       });
       const orden = Object.entries(artistas).sort((a,b) => b[1]-a[1]);
+      const artistaImgs = [
+        "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png",
+        "https://upload.wikimedia.org/wikipedia/commons/4/47/PNG_transparency_demonstration_1.png",
+        "https://upload.wikimedia.org/wikipedia/commons/8/89/Portrait_Placeholder.png",
+        "https://upload.wikimedia.org/wikipedia/commons/2/2c/Default_pfp.svg",
+        "https://upload.wikimedia.org/wikipedia/commons/5/59/User-avatar.svg"
+      ];
       orden.forEach(([name, count], idx) => {
-        // Usar una imagen genérica distinta para cada artista (con seed)
-        const artistaImg = `https://images.unsplash.com/photo-15${idx+1}1671782779-c97d3d27a1d4?w=240&h=240&fit=crop`;
+        const artistaImg = artistaImgs[idx % artistaImgs.length];
         const div = document.createElement("div");
         div.className = "item";
         div.innerHTML = `
-          <img src="${artistaImg}" alt="${name}" onerror="this.src='https://via.placeholder.com/120x120?text=Artista';">
+          <img src="${artistaImg}" alt="${name}">
           <div class="info">
             <p>${name}</p>
             <p class="artist">Reproducciones: ${count}</p>
@@ -126,7 +129,6 @@
       });
     }
 
-    // Mostrar datos
     mostrarTracks("recently-played", recentlyPlayedData);
     mostrarTracks("top-tracks", topTracksData, true);
     mostrarArtistas("top-artists", topTracksData.concat(recentlyPlayedData));
