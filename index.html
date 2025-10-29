@@ -28,6 +28,7 @@
       border-radius: 12px; 
       background: #232323;
       flex-shrink: 0;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
     }
     .info p { margin: 0; }
     .artist { color: #b3b3b3; font-size: 0.97rem; }
@@ -70,67 +71,7 @@
 
   <script>
     const topTracksData = [
-      { name: "As It Was", artist: "Harry Styles", popularity: 95, albumImage: "https://upload.wikimedia.org/wikipedia/en/a/a5/Harry_Styles_-_As_It_Was.png" },
-      { name: "Blinding Lights", artist: "The Weeknd", popularity: 92, albumImage: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" },
-      { name: "Dance Monkey", artist: "Tones and I", popularity: 85, albumImage: "https://upload.wikimedia.org/wikipedia/en/0/0b/Tones_and_I_-_Dance_Monkey.png" }
-    ];
-
-    const recentlyPlayedData = [
-      { name: "Daylight", artist: "David Kushner", albumImage: "https://upload.wikimedia.org/wikipedia/en/e/e0/David_Kushner_-_Daylight.png" },
-      { name: "Watermelon Sugar", artist: "Harry Styles", albumImage: "https://upload.wikimedia.org/wikipedia/en/0/05/Harry_Styles_-_Watermelon_Sugar.png" }
-    ];
-
-    function mostrarTracks(containerId, items, showPopularity=false) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = "";
-      items.forEach(track => {
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <img src="${track.albumImage}" alt="${track.name}">
-          <div class="info">
-            <p>${track.name}</p>
-            <p class="artist">${track.artist}</p>
-          </div>
-          ${showPopularity ? `<div class="popularity">Popularidad: ${track.popularity}</div>` : ""}
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    function mostrarArtistas(containerId, tracks) {
-      const container = document.getElementById(containerId);
-      container.innerHTML = "";
-      const artistas = {};
-      tracks.forEach(track => {
-        artistas[track.artist] = (artistas[track.artist] || 0) + 1;
-      });
-      const orden = Object.entries(artistas).sort((a,b) => b[1]-a[1]);
-      const artistaImgs = {
-        "Harry Styles": "https://upload.wikimedia.org/wikipedia/commons/5/55/Harry_Styles_2022_%28cropped%29.jpg",
-        "The Weeknd": "https://upload.wikimedia.org/wikipedia/commons/d/d3/The_Weeknd_2018.png",
-        "Tones and I": "https://upload.wikimedia.org/wikipedia/commons/a/a1/Tones_and_I_2019.png",
-        "David Kushner": "https://upload.wikimedia.org/wikipedia/commons/f/f9/David_Kushner_2023.png"
-      };
-      orden.forEach(([name, count]) => {
-        const artistaImg = artistaImgs[name] || "https://upload.wikimedia.org/wikipedia/commons/9/99/Sample_User_Icon.png";
-        const div = document.createElement("div");
-        div.className = "item";
-        div.innerHTML = `
-          <img src="${artistaImg}" alt="${name}">
-          <div class="info">
-            <p>${name}</p>
-            <p class="artist">Reproducciones: ${count}</p>
-          </div>
-        `;
-        container.appendChild(div);
-      });
-    }
-
-    mostrarTracks("recently-played", recentlyPlayedData);
-    mostrarTracks("top-tracks", topTracksData, true);
-    mostrarArtistas("top-artists", topTracksData.concat(recentlyPlayedData));
-  </script>
-</body>
-</html>
+      { name: "As It Was", artist: "Harry Styles", popularity: 95, albumImage: "https://i.scdn.co/image/ab67616d0000b273ec8b28f98b23a0811eec9f94" },
+      { name: "Blinding Lights", artist: "The Weeknd", popularity: 92, albumImage: "https://i.scdn.co/image/ab67616d0000b273e6f6a4e8dbff0443e761f4b0" },
+      { name: "Dance Monkey", artist: "Tones and I", popularity: 85, albumImage: "
 
